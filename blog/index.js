@@ -38,7 +38,7 @@ function getUserInfo(accessToken) {
   };
 
   return new Promise((resolve, reject) => {
-    request.get(options, function(error, response, body) {
+    request.get(options, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         reject(error);
       }
@@ -60,7 +60,7 @@ function getUserPlaylists(accessToken, userId) {
   };
 
   return new Promise((resolve, reject) => {
-    request.get(options, function(error, response, body) {
+    request.get(options, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         reject(error);
       }
@@ -71,7 +71,7 @@ function getUserPlaylists(accessToken, userId) {
 }
 
 // routes
-app.get("/", async function(req, res, next) {
+app.get("/", async function (req, res, next) {
   const { access_token: accessToken } = req.cookies;
 
   try {
@@ -86,7 +86,7 @@ app.get("/", async function(req, res, next) {
   }
 });
 
-app.get("/playlists", async function(req, res, next) {
+app.get("/playlists", async function (req, res, next) {
   const { access_token: accessToken } = req.cookies;
 
   if (!accessToken) {
@@ -103,7 +103,7 @@ app.get("/playlists", async function(req, res, next) {
   }
 });
 
-app.get("/login", function(req, res) {
+app.get("/login", function (req, res) {
   const state = generateRandomString(16);
 
   const queryString = querystring.stringify({
@@ -118,12 +118,12 @@ app.get("/login", function(req, res) {
   res.redirect(`https://accounts.spotify.com/authorize?${queryString}`);
 });
 
-app.get("/logout", function(req, res) {
+app.get("/logout", function (req, res) {
   res.clearCookie("access_token");
   res.redirect("/");
 });
 
-app.get("/callback", function(req, res, next) {
+app.get("/callback", function (req, res, next) {
   const { code, state } = req.query;
   const { auth_state } = req.cookies;
 
@@ -149,17 +149,17 @@ app.get("/callback", function(req, res, next) {
     json: true
   };
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       next(new Error("The token is invalid"));
     }
 
     res.cookie("access_token", body.access_token, { httpOnly: true });
-    res.redirect("/playlist");
+    res.redirect("/playlists");
   });
 });
 
 // server
-const server = app.listen(3000, function() {
+const server = app.listen(3000, function () {
   console.log(`Listening http://localhost:${server.address().port}`);
 });
